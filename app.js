@@ -1,5 +1,6 @@
 import express from 'express'
-import placesRouter from './router/places.routes'
+import placesRouter from './router/places.routes.js'
+
 
 // initialize express
 const app = express()
