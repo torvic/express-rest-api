@@ -1,4 +1,4 @@
-import uuid from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import HttpError from '../models/http-error.model.js';
 
 const DUMMY_PLACES = [
@@ -47,7 +47,7 @@ const createPlace = (req, res, next) => {
   const { title, description, coordinates, address, creator } = req.body;
   // const title = req.body.title;
   const createdPlace = {
-    id: uuid(),
+    id: uuidv4(),
     title,
     description,
     location: coordinates,
