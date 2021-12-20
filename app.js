@@ -17,12 +17,12 @@ app.use((error, req, res, next) => {
   res.status(error.code || 500)
   res.json({ message: error.messages || 'An unknown error occurred!' })
 })
-app.use((req, res, next) => {
-  const error = new HttpError('Could not find this routes.', 404);
-  throw error;
-});
 
 // routes
 app.use('/api/places', placesRouter)
 
+app.use((req, res, next) => {
+  const error = new HttpError('Could not find this routes.', 404);
+  throw error;
+});
 app.listen(PORT, console.log(`Server is running on PORT: ${PORT}`))
