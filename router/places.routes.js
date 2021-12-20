@@ -1,5 +1,11 @@
 import { Router } from 'express'
 
+// Controllers
+import {
+  getPlaceById,
+  getPlaceByUserId,
+} from '../controllers/places.controller.js'
+
 const router = Router()
 
 const DUMMY_PLACES = [
@@ -17,35 +23,9 @@ const DUMMY_PLACES = [
 ]
 
 // localhost:6000/places/1234556
-router.get('/:placeId', (req, res, next) => {
-  const { placeId } = req.params
-
-  // find the place id, in the DUMMY places
-  const place = DUMMY_PLACES.find((place) => {
-    return place.id === placeId
-  })
-  // place is equal to undefined
-  if (!place) {
-    throw new HttpError('Could not find a place for the provided id.', 404)
-  }
-
-  res.json({ place })
-})
+router.get('/:placeId', getPlaceById)
 
 // retrieve user ->  userId
-router.get('/user/:userId', (req, res, next) => {
-  const { userId } = req.params
-
-  const place = DUMMY_PLACES.find((place) => {
-    return place.creator === userId
-  })
-  if (!place) {
-    return next(
-      new HttpError('Could not find a place for the provided user id.', 404)
-    )
-  }
-
-  res.json({ place })
-})
+router.get('/user/:userId', getPlaceByUserId)
 
 export default router
