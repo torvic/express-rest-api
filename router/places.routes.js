@@ -1,12 +1,13 @@
 import { Router } from 'express'
+import { body } from 'express-validator'
 
 // Controllers
 import {
   getPlaceById,
   getPlaceByUserId,
   createPlace,
-	updatePlace,
-	deletePlace
+  updatePlace,
+  deletePlace,
 } from '../controllers/places.controller.js'
 
 const router = Router()
@@ -30,8 +31,19 @@ router.get('/:placeId', getPlaceById)
 
 // retrieve user ->  userId
 router.get('/user/:userId', getPlaceByUserId)
-router.post('/', createPlace)
-router.patch('/:placeId', updatePlace)
+router.post(
+  '/',
+  body('title', 'Title is required').notEmpty(),
+  body('description').isLength({ min: 5, max: 32 }),
+  body('address').notEmpty(),
+  createPlace
+)
+router.patch(
+  '/:placeId',
+  body('title').notEmpty(),
+  body('description').isLength({ min: 5, max: 32 }),
+  updatePlace
+)
 router.delete('/:placeId', deletePlace)
 
 export default router

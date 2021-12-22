@@ -15,6 +15,9 @@ app.use((error, req, res, next) => {
   if (res.headersSent) {
     return next(error)
   }
+	if (error instanceof Result) {
+    return res.status(400).json({ errors: error.array() });
+  }
   res.status(error.code || 500)
   res.json({ message: error.messages || 'An unknown error occurred!' })
 })

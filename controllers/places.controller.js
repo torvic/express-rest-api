@@ -1,3 +1,4 @@
+import { validationResult } from 'express-validator'
 import { v4 as uuidv4 } from 'uuid'
 import HttpError from '../models/http-error.model.js'
 
@@ -29,22 +30,31 @@ const getPlaceById = (req, res, next) => {
 }
 
 const getPlaceByUserId = (req, res, next) => {
-	const { userId } = req.params;
+  const { userId } = req.params
 
   const places = DUMMY_PLACES.filter((place) => {
-    return place.creator === userId;
-  });
+    return place.creator === userId
+  })
 
   if (!places || !places.length) {
     return next(
       new HttpError('Could not find a place for the provided user id.', 404)
-    );
+    )
   }
 
-  res.json({ places });
+  res.json({ places })
 }
 
+/**
+ * Create a place
+ * @param {Object} req
+ * @param {Object} res
+ */
 const createPlace = (req, res, next) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
+  }
   const { title, description, coordinates, address, creator } = req.body
   // const title = req.body.title;
   const createdPlace = {
@@ -61,7 +71,17 @@ const createPlace = (req, res, next) => {
   res.status(201).json({ place: createdPlace })
 }
 
+/**
+ * Update a place
+ * @param {Object} req
+ * @param {Object} res
+ */
 const updatePlace = (req, res, next) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return next(errors)
+    // return res.status(400).json({ errors: errors.array() });
+  }
   const { title, description } = req.body
   const { placeId } = req.params
 
@@ -81,8 +101,16 @@ const updatePlace = (req, res, next) => {
   res.status(200).json({ place: updatedPlace })
 }
 
+/**
+ * Delete a place
+ * @param {Object} req 
+ * @param {Object} res 
+ */
 const deletePlace = (req, res, next) => {
   const { placeId } = req.params
+  if (!DUMMY_PLACES.find((place) => place.id === placeId)) {
+    throw new HttpError('Could not find a place for that id.', 404)
+  }
   DUMMY_PLACES = DUMMY_PLACES.filter((place) => place.id !== placeId)
   res.status(200).json({ message: 'Deleted place.' })
 }
