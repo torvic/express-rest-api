@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express'
 import placesRouter from './router/places.routes.js'
 import usersRouter from './router/users.routes.js'
