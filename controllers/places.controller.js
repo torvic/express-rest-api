@@ -1,3 +1,4 @@
+import { getCoordsForAddress } from '../utils/location.js'
 import { validationResult } from 'express-validator'
 import { v4 as uuidv4 } from 'uuid'
 import HttpError from '../models/http-error.model.js'
@@ -50,13 +51,21 @@ const getPlaceByUserId = (req, res, next) => {
  * @param {Object} req
  * @param {Object} res
  */
-const createPlace = (req, res, next) => {
+const createPlace = async (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() })
   }
-  const { title, description, coordinates, address, creator } = req.body
+  const { title, description, address, creator } = req.body
   // const title = req.body.title;
+
+  let coordinates
+	try {
+    coordinates = await getCoordsForAddress(address);
+  } catch (error) {
+    return next(error);
+  }
+
   const createdPlace = {
     id: uuidv4(),
     title,
@@ -103,8 +112,8 @@ const updatePlace = (req, res, next) => {
 
 /**
  * Delete a place
- * @param {Object} req 
- * @param {Object} res 
+ * @param {Object} req
+ * @param {Object} res
  */
 const deletePlace = (req, res, next) => {
   const { placeId } = req.params
