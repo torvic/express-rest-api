@@ -1,8 +1,9 @@
 import axios from 'axios'
 
 import HttpError from '../models/http-error.model.js'
+import { development } from '../config/development.env.js'
 
-const API_KEY = 'AIzaSyB6YcCVE-M96BAqtaH9RpdisHzT08paIYI'
+const API_KEY = development.geocoding.apiKey
 const GEOCODING_API_URL =
   'https://maps.googleapis.com/maps/api/geocode/json?address='
 
