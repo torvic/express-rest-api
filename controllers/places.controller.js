@@ -2,6 +2,8 @@ import { getCoordsForAddress } from '../utils/location.js'
 import { validationResult } from 'express-validator'
 import { v4 as uuidv4 } from 'uuid'
 import HttpError from '../models/http-error.model.js'
+// Models
+import Place from '../models/Place.schema.js';
 
 const DUMMY_PLACES = [
   {
@@ -66,7 +68,8 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
 
-  const createdPlace = {
+	/* **************** without mongoose **************** */ 
+  /* const createdPlace = {
     id: uuidv4(),
     title,
     description,
@@ -75,7 +78,22 @@ const createPlace = async (req, res, next) => {
     creator,
   }
 
-  DUMMY_PLACES.push(createdPlace) // unshift(createdPlace)
+  DUMMY_PLACES.push(createdPlace) // unshift(createdPlace) */
+
+	const createdPlace = new Place({
+    title,
+    description,
+    location: coordinates,
+    address,
+    image: 'imageUrl',
+    creator,
+  });
+
+  try {
+    await createdPlace.save();
+  } catch (error) {
+    return next(HttpError('Creating place failed, please try again.', 500));
+  }
 
   res.status(201).json({ place: createdPlace })
 }
