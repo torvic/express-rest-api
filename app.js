@@ -1,5 +1,6 @@
 import express from 'express'
 import placesRouter from './router/places.routes.js'
+import usersRouter from './router/users.routes.js'
 // Utils
 import HttpError from './models/http-error.model.js';
 
@@ -20,6 +21,7 @@ app.use((error, req, res, next) => {
 
 // routes
 app.use('/api/places', placesRouter)
+app.use('/api/users', usersRouter)
 
 app.use((req, res, next) => {
   const error = new HttpError('Could not find this routes.', 404);
