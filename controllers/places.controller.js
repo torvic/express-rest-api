@@ -131,7 +131,7 @@ const createPlace = async (req, res, next) => {
  * @param {Object} req
  * @param {Object} res
  */
-const updatePlace = (req, res, next) => {
+const updatePlace = async (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
     return next(errors)
@@ -200,7 +200,7 @@ const updatePlace = (req, res, next) => {
  * @param {Object} req
  * @param {Object} res
  */
-const deletePlace = (req, res, next) => {
+const deletePlace = async (req, res, next) => {
   const { placeId } = req.params
 
   /* if (!DUMMY_PLACES.find((place) => place.id === placeId)) {
