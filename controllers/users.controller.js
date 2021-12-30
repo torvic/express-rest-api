@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid';
 
 import HttpError from '../models/http-error.model.js';
 
@@ -13,7 +13,7 @@ const DUMMY_USERS = [
 
 /**
  * List of users
- * @param {Object} res 
+ * @param {Object} res
  */
 const getUsers = (req, res, next) => {
   res.json({ users: DUMMY_USERS });
@@ -21,8 +21,8 @@ const getUsers = (req, res, next) => {
 
 /**
  * Signup user
- * @param {Object} req 
- * @param {Object} res 
+ * @param {Object} req
+ * @param {Object} res
  */
 const signupUser = (req, res, next) => {
   const { name, email, password } = req.body;
@@ -46,8 +46,8 @@ const signupUser = (req, res, next) => {
 
 /**
  * Login user
- * @param {Object} req 
- * @param {Object} res 
+ * @param {Object} req
+ * @param {Object} res
  */
 const loginUser = (req, res, next) => {
   const { email, password } = req.body;
@@ -56,7 +56,7 @@ const loginUser = (req, res, next) => {
   if (!identifiedUser || identifiedUser.password !== password) {
     throw new HttpError(
       'Could not identify user, credentials seem to be wrong.',
-      401
+      401,
     );
   }
 
