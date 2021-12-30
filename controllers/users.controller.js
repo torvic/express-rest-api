@@ -6,21 +6,30 @@ import { validationResult } from 'express-validator';
 // Models
 import User from '../models/User.schema.js';
 
-const DUMMY_USERS = [
+/* const DUMMY_USERS = [
   {
     id: 'u1',
     name: 'Eduardo Hernández',
     email: 'test@test.com',
     password: 'testers',
   },
-];
+]; */
 
 /**
  * List of users
  * @param {Object} res
  */
-const getUsers = (req, res, next) => {
-  res.json({ users: DUMMY_USERS });
+const getUsers = async (req, res, next) => {
+  let users;
+  try {
+    // users = await User.find({}, '-password');
+    users = await User.find().select('-password');
+  } catch (error) {
+    return next(
+      new HttpError('Fetching users failed, please try again later.', 500),
+    );
+  }
+  res.json({ users });
 };
 
 /**
