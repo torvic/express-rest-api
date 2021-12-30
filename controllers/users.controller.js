@@ -1,6 +1,10 @@
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 
 import HttpError from '../models/http-error.model.js';
+import { validationResult } from 'express-validator';
+
+// Models
+import User from '../models/User.schema.js';
 
 const DUMMY_USERS = [
   {
@@ -24,10 +28,14 @@ const getUsers = (req, res, next) => {
  * @param {Object} req
  * @param {Object} res
  */
-const signupUser = (req, res, next) => {
-  const { name, email, password } = req.body;
+const signupUser = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(errors);
+  }
+  const { name, email, password, places } = req.body;
 
-  const hasUser = DUMMY_USERS.find((user) => user.email === email);
+  /* const hasUser = DUMMY_USERS.find((user) => user.email === email);
   if (hasUser) {
     throw new HttpError('Could not create user, email already exists.', 400);
   }
@@ -39,9 +47,39 @@ const signupUser = (req, res, next) => {
     password,
   };
 
-  DUMMY_USERS.push(createdUser);
+  DUMMY_USERS.push(createdUser); */
+  let existingUser;
+  try {
+    existingUser = await User.findOne({ email });
+  } catch (error) {
+    return next(
+      new HttpError('Signing up failed, please try again later.', 500),
+    );
+  }
 
-  res.status(201).json({ user: createdUser });
+  if (existingUser) {
+    return next(
+      new HttpError('User exists already, please login instead.', 404),
+    );
+  }
+
+  const newUser = new User({
+    name,
+    email,
+    image: 'https://live.staticflickr.com/7631/26849088292_36fc52ee90_b.jpg',
+    password,
+    places,
+  });
+
+  try {
+    await newUser.save();
+  } catch (error) {
+    return next(
+      new HttpError('Signing up failed, please try again later.', 500),
+    );
+  }
+
+  res.status(201).json({ user: newUser });
 };
 
 /**
