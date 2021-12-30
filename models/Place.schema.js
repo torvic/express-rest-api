@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 const { Schema, model } = mongoose;
 
 const placeSchema = new Schema({
@@ -13,7 +13,13 @@ const placeSchema = new Schema({
     lat: { type: Number, required: true },
     lng: { type: Number, required: true },
   },
-  creator: { type: String, required: true },
+  creator: [
+    {
+      type: Types.ObjectId,
+      required: true,
+      ref: 'User',
+    },
+  ],
 });
 
 export default model('Place', placeSchema);
