@@ -234,9 +234,18 @@ const deletePlace = async (req, res, next) => {
   }
   DUMMY_PLACES = DUMMY_PLACES.filter((place) => place.id !== placeId) */
   try {
-    await Place.findByIdAndDelete(placeId);
+    const session = await mongoose.startSession();
+    await session.withTransaction(async () => {
+      const place = await Place.findByIdAndDelete(placeId, {
+        session,
+      }).populate('creator');
+      place.creator.places.pull(place);
+      await place.creator.save({ session });
+    });
   } catch (error) {
-    return next(new HttpError('Something went wrong, could not delete place.'));
+    return next(
+      new HttpError('Something went wrong, could not delete place.', 500),
+    );
   }
 
   res.status(200).json({ message: 'Deleted place.' });
