@@ -4,6 +4,8 @@ import { validationResult } from 'express-validator';
 import HttpError from '../models/http-error.model.js';
 // Models
 import Place from '../models/Place.schema.js';
+import User from '../models/User.schema.js';
+import mongoose from 'mongoose';
 
 /* const DUMMY_PLACES = [
   {
@@ -116,6 +118,30 @@ const createPlace = async (req, res, next) => {
     image: 'imageUrl',
     creator,
   });
+
+  let user;
+  try {
+    user = await User.findById(creator);
+  } catch (err) {
+    return next(new HttpError('Creating place failed, please try again', 500));
+  }
+
+  if (!user) {
+    return next(new HttpError('Could not find user for provided id', 404));
+  }
+
+  try {
+    // Mongoose Transaction
+    const session = await mongoose.startSession();
+    await session.withTransaction(async () => {
+      await createdPlace.save({ session });
+      await user.places.push(createdPlace);
+      await user.save({ session });
+    });
+    await session.endSession();
+  } catch (err) {
+    return next(HttpError('Creating place failed, please try again.', 500));
+  }
 
   try {
     await createdPlace.save();
